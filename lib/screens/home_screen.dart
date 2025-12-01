@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/gold_provider.dart';
-import '../providers/auth_provider.dart';
-import '../widgets/gold_price_card.dart';
+import '../providers/purchase_provider.dart';
+import '../providers/asset_provider.dart';
 import '../widgets/loading_widget.dart';
 import '../widgets/error_widget.dart';
-import 'purchase_list_screen.dart';
+import '../widgets/total_asset_summary.dart';
+import '../widgets/asset_card.dart';
 import 'add_purchase_screen.dart';
-import 'login_screen.dart';
+import 'gold_prices_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,8 +22,30 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<GoldProvider>().fetchGoldPrices();
+      _loadData();
     });
+  }
+
+  Future<void> _loadData() async {
+    final goldProvider = context.read<GoldProvider>();
+    final purchaseProvider = context.read<PurchaseProvider>();
+    final assetProvider = context.read<AssetProvider>();
+
+    // Altın fiyatlarını yükle
+    await goldProvider.fetchGoldPrices();
+
+    // Alış kayıtlarını yükle
+    await purchaseProvider.loadPurchases();
+
+    // Varlıkları hesapla
+    assetProvider.calculateAssets(
+      purchaseProvider.purchases,
+      goldProvider.goldPrices,
+    );
+  }
+
+  Future<void> _refreshData() async {
+    await _loadData();
   }
 
   @override
@@ -30,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Altın Takip',
+          'Varlıklarım',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.amber[700],
@@ -39,94 +62,119 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<GoldProvider>().fetchGoldPrices();
-            },
+            onPressed: _refreshData,
             tooltip: 'Yenile',
           ),
           IconButton(
-            icon: const Icon(Icons.list),
+            icon: const Icon(Icons.trending_up),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const PurchaseListScreen()),
+                MaterialPageRoute(builder: (context) => const GoldPricesScreen()),
               );
             },
-            tooltip: 'Alış Kayıtları',
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) async {
-              if (value == 'logout') {
-                await context.read<AuthProvider>().logout();
-                if (mounted) {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-                }
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Çıkış Yap'),
-                  ],
-                ),
-              ),
-            ],
+            tooltip: 'Altın Fiyatları',
           ),
         ],
       ),
-      body: Consumer<GoldProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const LoadingWidget(message: 'Altın fiyatları yükleniyor...');
+      body: Consumer3<GoldProvider, PurchaseProvider, AssetProvider>(
+        builder: (context, goldProvider, purchaseProvider, assetProvider, child) {
+          // Altın fiyatları yükleniyor mu kontrol et
+          if (goldProvider.isLoading && assetProvider.assets.isEmpty) {
+            return const LoadingWidget(message: 'Veriler yükleniyor...');
           }
 
-          if (provider.error != null) {
+          // Altın fiyatları hatası var mı kontrol et
+          if (goldProvider.error != null && assetProvider.assets.isEmpty) {
             return ErrorDisplayWidget(
-              message: provider.error!,
-              onRetry: () {
-                provider.fetchGoldPrices();
-              },
+              message: goldProvider.error!,
+              onRetry: _refreshData,
             );
           }
 
-          if (provider.goldPrices.isEmpty) {
-            return const Center(
-              child: Text('Altın fiyatı bulunamadı'),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => provider.fetchGoldPrices(),
-            child: Column(
-              children: [
-                if (provider.updateDate != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    color: Colors.amber[50],
-                    child: Text(
-                      'Son Güncelleme: ${provider.updateDate}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 12,
-                      ),
+          // Varlık yoksa
+          if (assetProvider.assets.isEmpty) {
+            return RefreshIndicator(
+              onRefresh: _refreshData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - 200,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 80,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Henüz varlık kaydı yok',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Altın alış kaydı ekleyerek başlayın',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const AddPurchaseScreen(),
+                              ),
+                            ).then((_) => _refreshData());
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('İlk Alış Kaydını Ekle'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber[700],
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
+              ),
+            );
+          }
+
+          // Varlıklar var, göster
+          return RefreshIndicator(
+            onRefresh: _refreshData,
+            child: Column(
+              children: [
+                // Toplam varlık özeti
+                TotalAssetSummary(
+                  totalCurrentValue: assetProvider.totalCurrentValue,
+                  totalPurchaseValue: assetProvider.totalPurchaseValue,
+                  totalProfitLoss: assetProvider.totalProfitLoss,
+                  totalProfitLossPercentage: assetProvider.totalProfitLossPercentage,
+                ),
+                // Varlık listesi
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: provider.goldPrices.length,
+                    padding: const EdgeInsets.only(bottom: 80),
+                    itemCount: assetProvider.assets.length,
                     itemBuilder: (context, index) {
-                      return GoldPriceCard(
-                        goldPrice: provider.goldPrices[index],
+                      return AssetCard(
+                        asset: assetProvider.assets[index],
                       );
                     },
                   ),
@@ -141,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddPurchaseScreen()),
-          );
+          ).then((_) => _refreshData());
         },
         backgroundColor: Colors.amber[700],
         icon: const Icon(Icons.add),
@@ -150,4 +198,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

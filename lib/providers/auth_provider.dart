@@ -17,13 +17,8 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final isLoggedIn = await _storageService.isLoggedIn();
-    if (isLoggedIn) {
-      _currentUser = await _storageService.getUser();
-    } else {
-      // Demo kullanıcıyı kontrol et ve oluştur
-      await _createDemoUserIfNeeded();
-    }
+    // Her zaman demo kullanıcıyı oluştur veya yükle
+    await _createDemoUserIfNeeded();
 
     _isLoading = false;
     notifyListeners();
@@ -34,11 +29,11 @@ class AuthProvider with ChangeNotifier {
     const demoEmail = 'fapaydn41@yandex.com';
     const demoPassword = '123456';
 
-    // Demo kullanıcı zaten var mı kontrol et
-    final existingPassword = await _storageService.getPassword(demoUsername);
+    // Önce mevcut kullanıcıyı kontrol et
+    _currentUser = await _storageService.getUser();
     
-    if (existingPassword == null) {
-      // Demo kullanıcı yok, oluştur
+    // Eğer kullanıcı yoksa veya demo kullanıcı değilse, demo kullanıcıyı oluştur
+    if (_currentUser == null || _currentUser!.username != demoUsername) {
       final hashedPassword = EncryptionService.hashPassword(demoPassword);
       final demoUser = User(
         id: 'demo_user_${DateTime.now().millisecondsSinceEpoch}',
@@ -50,20 +45,6 @@ class AuthProvider with ChangeNotifier {
       await _storageService.saveUser(demoUser);
       await _storageService.savePassword(demoUsername, hashedPassword);
       _currentUser = demoUser;
-    } else {
-      // Demo kullanıcı var, otomatik giriş yap
-      _currentUser = await _storageService.getUser();
-      if (_currentUser == null) {
-        // Kullanıcı bilgisi yoksa yeniden oluştur
-        final demoUser = User(
-          id: 'demo_user_${DateTime.now().millisecondsSinceEpoch}',
-          username: demoUsername,
-          email: demoEmail,
-          createdAt: DateTime.now(),
-        );
-        await _storageService.saveUser(demoUser);
-        _currentUser = demoUser;
-      }
     }
   }
 

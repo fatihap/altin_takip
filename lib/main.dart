@@ -4,7 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/gold_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/purchase_provider.dart';
-import 'screens/login_screen.dart';
+import 'providers/asset_provider.dart';
 import 'screens/home_screen.dart';
 
 void main() {
@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => GoldProvider()),
         ChangeNotifierProvider(create: (_) => PurchaseProvider()),
+        ChangeNotifierProvider(create: (_) => AssetProvider()),
       ],
       child: MaterialApp(
         title: 'Altın Takip',
@@ -87,11 +88,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
           );
         }
 
-        if (authProvider.isAuthenticated) {
-          return const HomeScreen();
-        }
-
-        return const LoginScreen();
+        // Her zaman ana ekrana yönlendir (demo kullanıcı otomatik oluşturulur)
+        return const HomeScreen();
       },
     );
   }

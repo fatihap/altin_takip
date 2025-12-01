@@ -109,8 +109,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                           ),
                           Text(
+                            'E-posta: fapaydn41@yandex.com',
+                            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                          ),
+                          Text(
                             'Şifre: 123456',
                             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _usernameController.text = 'fapaydn41';
+                                _passwordController.text = '123456';
+                              });
+                            },
+                            icon: const Icon(Icons.auto_fix_high, size: 16),
+                            label: const Text('Otomatik Doldur'),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            ),
                           ),
                         ],
                       ),
@@ -119,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _usernameController,
                     decoration: InputDecoration(
-                      labelText: 'Kullanıcı Adı',
+                      labelText: 'Kullanıcı Adı veya E-posta',
                       prefixIcon: const Icon(Icons.person),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),

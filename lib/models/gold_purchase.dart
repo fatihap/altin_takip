@@ -5,6 +5,7 @@ class GoldPurchase {
   final DateTime purchaseDate;
   final String location;
   final String? notes;
+  final double? purchasePricePerGram; // Alış fiyatı (gram başına)
 
   GoldPurchase({
     required this.id,
@@ -13,6 +14,7 @@ class GoldPurchase {
     required this.purchaseDate,
     required this.location,
     this.notes,
+    this.purchasePricePerGram,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class GoldPurchase {
       'purchaseDate': purchaseDate.toIso8601String(),
       'location': location,
       'notes': notes,
+      'purchasePricePerGram': purchasePricePerGram,
     };
   }
 
@@ -34,6 +37,9 @@ class GoldPurchase {
       purchaseDate: DateTime.parse(json['purchaseDate']),
       location: json['location'] ?? '',
       notes: json['notes'],
+      purchasePricePerGram: json['purchasePricePerGram'] != null
+          ? (json['purchasePricePerGram'] as num).toDouble()
+          : null,
     );
   }
 }
