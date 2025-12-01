@@ -249,8 +249,6 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Altın Alış Ekle'),
-        backgroundColor: Colors.amber[700],
-        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -396,22 +394,12 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: _savePurchase,
+                icon: const Icon(Icons.check_rounded),
+                label: const Text('Kaydet'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber[700],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Kaydet',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                 ),
               ),
             ],

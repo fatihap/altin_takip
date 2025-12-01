@@ -52,21 +52,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Varlıklarım',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.amber[700],
-        foregroundColor: Colors.white,
-        elevation: 0,
+        title: const Text('Varlıklarım'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _refreshData,
             tooltip: 'Yenile',
           ),
           IconButton(
-            icon: const Icon(Icons.trending_up),
+            icon: const Icon(Icons.trending_up_rounded),
             onPressed: () {
               Navigator.push(
                 context,
@@ -104,29 +98,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.account_balance_wallet_outlined,
-                          size: 80,
-                          color: Colors.grey[400],
+                        Container(
+                          padding: const EdgeInsets.all(32),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFD4AF37).withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.account_balance_wallet_outlined,
+                            size: 64,
+                            color: Color(0xFFD4AF37),
+                          ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         Text(
                           'Henüz varlık kaydı yok',
                           style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Altın alış kaydı ekleyerek başlayın',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
+                            fontSize: 15,
+                            color: Colors.grey[600],
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 32),
                         ElevatedButton.icon(
                           onPressed: () {
                             Navigator.push(
@@ -136,16 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ).then((_) => _refreshData());
                           },
-                          icon: const Icon(Icons.add),
+                          icon: const Icon(Icons.add_rounded),
                           label: const Text('İlk Alış Kaydını Ekle'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber[700],
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                          ),
                         ),
                       ],
                     ),
@@ -191,8 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(builder: (context) => const AddPurchaseScreen()),
           ).then((_) => _refreshData());
         },
-        backgroundColor: Colors.amber[700],
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.add_rounded),
         label: const Text('Altın Alış Ekle'),
       ),
     );

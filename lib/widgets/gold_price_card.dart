@@ -13,31 +13,67 @@ class GoldPriceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPositive = goldPrice.isPositiveChange;
     
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              goldPrice.name,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildPriceColumn('Alış', goldPrice.alis, Colors.blue),
-                _buildPriceColumn('Satış', goldPrice.satis, Colors.green),
-                _buildChangeColumn(goldPrice.degisim, isPositive),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.account_balance_wallet_rounded,
+                    color: Color(0xFFD4AF37),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    goldPrice.name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A1A1A),
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildPriceColumn('Alış', goldPrice.alis, const Color(0xFF3B82F6)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildPriceColumn('Satış', goldPrice.satis, const Color(0xFF10B981)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildChangeColumn(goldPrice.degisim, isPositive),
+                ),
               ],
             ),
           ],
@@ -47,7 +83,12 @@ class GoldPriceCard extends StatelessWidget {
   }
 
   Widget _buildPriceColumn(String label, String price, Color color) {
-    return Expanded(
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -56,9 +97,10 @@ class GoldPriceCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             price,
             style: TextStyle(
@@ -73,7 +115,22 @@ class GoldPriceCard extends StatelessWidget {
   }
 
   Widget _buildChangeColumn(String change, bool isPositive) {
-    return Expanded(
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isPositive
+              ? [
+                  Colors.green[50]!,
+                  Colors.green[100]!,
+                ]
+              : [
+                  Colors.red[50]!,
+                  Colors.red[100]!,
+                ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
@@ -82,27 +139,31 @@ class GoldPriceCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isPositive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              change,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: isPositive ? Colors.green : Colors.red,
+          const SizedBox(height: 6),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                size: 16,
+                color: isPositive ? Colors.green[700] : Colors.red[700],
               ),
-            ),
+              const SizedBox(width: 4),
+              Text(
+                change,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: isPositive ? Colors.green[700] : Colors.red[700],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 }
-

@@ -14,14 +14,18 @@ class LoadingWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(),
+          const CircularProgressIndicator(
+            strokeWidth: 3,
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFD4AF37)),
+          ),
           if (message != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Text(
               message!,
               style: TextStyle(
                 color: Colors.grey[600],
-                fontSize: 14,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -30,4 +34,3 @@ class LoadingWidget extends StatelessWidget {
     );
   }
 }
-

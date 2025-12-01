@@ -26,9 +26,6 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Altın Fiyatları'),
-        backgroundColor: Colors.amber[700],
-        foregroundColor: Colors.white,
-        elevation: 0,
       ),
       body: Consumer<GoldProvider>(
         builder: (context, provider, child) {
@@ -58,20 +55,35 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
                 if (provider.updateDate != null)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    color: Colors.amber[50],
-                    child: Text(
-                      'Son Güncelleme: ${provider.updateDate}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 12,
-                      ),
+                    margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD4AF37).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.update_rounded,
+                          size: 16,
+                          color: Colors.grey[700],
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Son Güncelleme: ${provider.updateDate}',
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: const EdgeInsets.only(bottom: 20),
                     itemCount: provider.goldPrices.length,
                     itemBuilder: (context, index) {
                       return GoldPriceCard(
