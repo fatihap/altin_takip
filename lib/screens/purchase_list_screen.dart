@@ -121,8 +121,9 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 4),
-                      Text('Miktar: ${purchase.amount.toStringAsFixed(2)} gram'),
-                      Text('Yer: ${purchase.location}'),
+                      Text('Miktar: ${purchase.amount.toStringAsFixed(purchase.unit == 'adet' ? 0 : 2)} ${purchase.unit}'),
+                      if (purchase.location != null && purchase.location!.isNotEmpty)
+                        Text('Yer: ${purchase.location}'),
                       Text(
                         'Tarih: ${DateFormat('dd MMMM yyyy', 'tr_TR').format(purchase.purchaseDate)}',
                       ),

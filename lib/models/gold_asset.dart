@@ -37,14 +37,16 @@ class GoldAsset {
   double? get totalPurchaseValue {
     final pricePerGram = purchasePricePerGram;
     if (pricePerGram == null) return null;
-    return pricePerGram * purchase.amount;
+    // Miktarı grama çevir (adet olan altınlar için)
+    return pricePerGram * purchase.amountInGrams;
   }
 
   // Toplam güncel değer
   double? get totalCurrentValue {
     final pricePerGram = currentPricePerGram;
     if (pricePerGram == null) return null;
-    return pricePerGram * purchase.amount;
+    // Miktarı grama çevir (adet olan altınlar için)
+    return pricePerGram * purchase.amountInGrams;
   }
 
   // Kar/Zarar miktarı

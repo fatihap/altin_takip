@@ -61,7 +61,7 @@ class AssetCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${asset.purchase.amount.toStringAsFixed(2)} gram',
+                        '${asset.purchase.amount.toStringAsFixed(asset.purchase.unit == 'adet' ? 0 : 2)} ${asset.purchase.unit}',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[600],
@@ -163,19 +163,21 @@ class AssetCard extends StatelessWidget {
                     color: Colors.grey[600],
                   ),
                 ),
-                const SizedBox(width: 16),
-                Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    asset.purchase.location,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
+                if (asset.purchase.location != null && asset.purchase.location!.isNotEmpty) ...[
+                  const SizedBox(width: 16),
+                  Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      asset.purchase.location!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
+                ],
               ],
             ),
           ],

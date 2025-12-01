@@ -17,6 +17,7 @@ class AddPurchaseScreen extends StatefulWidget {
 class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
+  final _purchasePriceController = TextEditingController();
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
   
@@ -34,12 +35,59 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     'Gümüş',
   ];
 
+  // Altın türüne göre birim
+  String _getUnit(String goldType) {
+    switch (goldType) {
+      case 'Gram Altın':
+      case 'Gram Has Altın':
+      case 'Gümüş':
+        return 'Gram';
+      case 'Çeyrek Altın':
+      case 'Yarım Altın':
+      case 'Tam Altın':
+      case 'Cumhuriyet Altını':
+      case 'Ata Altın':
+        return 'Adet';
+      case 'Ons Altın':
+        return 'Ons';
+      default:
+        return 'Gram';
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Güncel fiyatı öneri olarak göster
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Altın fiyatlarını yükle
+      final goldProvider = context.read<GoldProvider>();
+      if (goldProvider.goldPrices.isEmpty) {
+        await goldProvider.fetchGoldPrices();
+      }
+      _updateSuggestedPrice();
+    });
+  }
+
   @override
   void dispose() {
     _amountController.dispose();
+    _purchasePriceController.dispose();
     _locationController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  void _updateSuggestedPrice({bool forceUpdate = false}) {
+    final suggestedPrice = _getCurrentPriceFromAPI();
+    if (suggestedPrice != null) {
+      // Eğer alan boşsa veya zorla güncelleme isteniyorsa güncelle
+      if (_purchasePriceController.text.isEmpty || forceUpdate) {
+        setState(() {
+          _purchasePriceController.text = PriceParser.formatTurkishPrice(suggestedPrice);
+        });
+      }
+    }
   }
 
   Future<void> _selectDate() async {
@@ -57,31 +105,8 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     }
   }
 
-  double? _calculatePricePerGram(String goldType, double satisPrice) {
-    switch (goldType) {
-      case 'Gram Altın':
-      case 'Gram Has Altın':
-        return satisPrice;
-      case 'Çeyrek Altın':
-        return satisPrice / 1.754;
-      case 'Yarım Altın':
-        return satisPrice / 3.508;
-      case 'Tam Altın':
-        return satisPrice / 7.016;
-      case 'Cumhuriyet Altını':
-        return satisPrice / 7.216;
-      case 'Ata Altın':
-        return satisPrice / 7.216;
-      case 'Ons Altın':
-        return satisPrice / 31.1035;
-      case 'Gümüş':
-        return satisPrice;
-      default:
-        return satisPrice / 7.0;
-    }
-  }
-
-  double? _getCurrentPricePerGram() {
+  // API'den direkt fiyatı al (hesaplama yapma)
+  double? _getCurrentPriceFromAPI() {
     final goldProvider = context.read<GoldProvider>();
     if (goldProvider.goldPrices.isEmpty) return null;
 
@@ -108,16 +133,58 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
         ),
       );
     } catch (e) {
-      // Eşleşme bulunamadı, ilk fiyatı kullan
-      matchingPrice = goldProvider.goldPrices.first;
+      // Eşleşme bulunamadı
+      return null;
     }
 
     if (matchingPrice == null) return null;
     
+    // API'den gelen satış fiyatını direkt parse et (hesaplama yapma)
     final satisPrice = PriceParser.parseTurkishPrice(matchingPrice.satis);
-    if (satisPrice == null) return null;
-    
-    return _calculatePricePerGram(_selectedGoldType, satisPrice);
+    return satisPrice;
+  }
+
+  // Altın türüne göre fiyat birimi
+  String _getPriceUnit() {
+    switch (_selectedGoldType) {
+      case 'Gram Altın':
+      case 'Gram Has Altın':
+      case 'Gümüş':
+        return '₺/gram';
+      case 'Çeyrek Altın':
+      case 'Yarım Altın':
+      case 'Tam Altın':
+      case 'Cumhuriyet Altını':
+      case 'Ata Altın':
+        return '₺/adet';
+      case 'Ons Altın':
+        return '₺/ons';
+      default:
+        return '₺/gram';
+    }
+  }
+
+  // Alış fiyatını gram başına çevir (hesaplamalar için)
+  double? _convertToPricePerGram(double price) {
+    switch (_selectedGoldType) {
+      case 'Gram Altın':
+      case 'Gram Has Altın':
+      case 'Gümüş':
+        return price; // Zaten gram başına
+      case 'Çeyrek Altın':
+        return price / 1.754; // Adet başına fiyatı gram başına çevir
+      case 'Yarım Altın':
+        return price / 3.508;
+      case 'Tam Altın':
+        return price / 7.016;
+      case 'Cumhuriyet Altını':
+      case 'Ata Altın':
+        return price / 7.216;
+      case 'Ons Altın':
+        return price / 31.1035; // Ons başına fiyatı gram başına çevir
+      default:
+        return price / 7.0;
+    }
   }
 
   Future<void> _savePurchase() async {
@@ -125,15 +192,38 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
       return;
     }
 
-    // Güncel fiyatı al
-    final pricePerGram = _getCurrentPricePerGram();
+    // Kullanıcının girdiği alış fiyatını parse et
+    double? purchasePrice;
+    if (_purchasePriceController.text.isNotEmpty) {
+      purchasePrice = PriceParser.parseTurkishPrice(_purchasePriceController.text);
+      if (purchasePrice == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Lütfen geçerli bir alış fiyatı girin'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    } else {
+      // Eğer kullanıcı fiyat girmediyse, API'den güncel fiyatı kullan
+      purchasePrice = _getCurrentPriceFromAPI();
+    }
+
+    // Fiyatı gram başına çevir (hesaplamalar için)
+    double? pricePerGram;
+    if (purchasePrice != null) {
+      pricePerGram = _convertToPricePerGram(purchasePrice);
+    }
 
     final purchase = GoldPurchase(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       goldType: _selectedGoldType,
       amount: double.parse(_amountController.text.replaceAll(',', '.')),
       purchaseDate: _selectedDate,
-      location: _locationController.text.trim(),
+      location: _locationController.text.trim().isEmpty 
+          ? null 
+          : _locationController.text.trim(),
       notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       purchasePricePerGram: pricePerGram,
     );
@@ -147,7 +237,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
         SnackBar(
           content: Text(pricePerGram != null
               ? 'Altın alış kaydı eklendi! (Alış fiyatı: ${PriceParser.formatTurkishPrice(pricePerGram)} ₺/gram)'
-              : 'Altın alış kaydı eklendi! (Fiyat bilgisi alınamadı)'),
+              : 'Altın alış kaydı eklendi!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -189,28 +279,40 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                     setState(() {
                       _selectedGoldType = value;
                     });
+                    // Altın türü değiştiğinde fiyatı zorla güncelle
+                    _updateSuggestedPrice(forceUpdate: true);
                   }
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _amountController,
-                decoration: InputDecoration(
-                  labelText: 'Miktar (Gram)',
-                  prefixIcon: const Icon(Icons.scale),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Lütfen miktarı girin';
-                  }
-                  if (double.tryParse(value.replaceAll(',', '.')) == null) {
-                    return 'Geçerli bir sayı girin';
-                  }
-                  return null;
+              Builder(
+                builder: (context) {
+                  final unit = _getUnit(_selectedGoldType);
+                  return TextFormField(
+                    controller: _amountController,
+                    decoration: InputDecoration(
+                      labelText: 'Miktar ($unit)',
+                      prefixIcon: const Icon(Icons.scale),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      helperText: unit == 'Adet'
+                          ? 'Örnek: 2 (2 adet)'
+                          : unit == 'Ons'
+                              ? 'Örnek: 1.5 (1.5 ons)'
+                              : 'Örnek: 5.5 (5.5 gram)',
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen miktarı girin';
+                      }
+                      if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                        return 'Geçerli bir sayı girin';
+                      }
+                      return null;
+                    },
+                  );
                 },
               ),
               const SizedBox(height: 16),
@@ -231,21 +333,55 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              Builder(
+                builder: (context) {
+                  final priceUnit = _getPriceUnit();
+                  return TextFormField(
+                    controller: _purchasePriceController,
+                    decoration: InputDecoration(
+                      labelText: 'Alış Fiyatı ($priceUnit)',
+                      prefixIcon: const Icon(Icons.attach_money),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      helperText: 'Örnek: 5.774,89 (API\'den güncel fiyat otomatik doldurulur)',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.refresh),
+                        tooltip: 'Güncel fiyatı yükle',
+                        onPressed: () {
+                          final suggestedPrice = _getCurrentPriceFromAPI();
+                          if (suggestedPrice != null) {
+                            setState(() {
+                              _purchasePriceController.text = PriceParser.formatTurkishPrice(suggestedPrice);
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen alış fiyatını girin';
+                      }
+                      final parsed = PriceParser.parseTurkishPrice(value);
+                      if (parsed == null || parsed <= 0) {
+                        return 'Geçerli bir fiyat girin';
+                      }
+                      return null;
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _locationController,
                 decoration: InputDecoration(
-                  labelText: 'Kuyumcu / Yer',
+                  labelText: 'Kuyumcu / Yer (Opsiyonel)',
                   prefixIcon: const Icon(Icons.location_on),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Lütfen yer bilgisini girin';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
               TextFormField(
