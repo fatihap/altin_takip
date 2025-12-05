@@ -96,5 +96,56 @@ class StorageService {
       await prefs.setString(_purchasesKey, encrypted);
     }
   }
+
+  // Alış kaydını güncelle
+  Future<void> updatePurchase(GoldPurchase updatedPurchase) async {
+    final purchases = await getPurchases();
+    final index = purchases.indexWhere((p) => p.id == updatedPurchase.id);
+    
+    if (index != -1) {
+      purchases[index] = updatedPurchase;
+      
+      final prefs = await SharedPreferences.getInstance();
+      final purchasesJson = purchases.map((p) => p.toJson()).toList();
+      final jsonString = json.encode(purchasesJson);
+      final encrypted = EncryptionService.encryptData(jsonString);
+      await prefs.setString(_purchasesKey, encrypted);
+    }
+  }
+
+  // Varlık görüntüleme şifresi
+  static const String _assetPasswordKey = 'asset_view_password';
+  static const String _assetPasswordEnabledKey = 'asset_password_enabled';
+
+  Future<void> setAssetPassword(String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    final hashed = EncryptionService.encryptData(password);
+    await prefs.setString(_assetPasswordKey, hashed);
+    await prefs.setBool(_assetPasswordEnabledKey, true);
+  }
+
+  Future<bool> checkAssetPassword(String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString(_assetPasswordKey);
+    if (stored == null) return false;
+    
+    try {
+      final decrypted = EncryptionService.decryptData(stored);
+      return decrypted == password;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> isAssetPasswordEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_assetPasswordEnabledKey) ?? false;
+  }
+
+  Future<void> disableAssetPassword() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_assetPasswordKey);
+    await prefs.setBool(_assetPasswordEnabledKey, false);
+  }
 }
 

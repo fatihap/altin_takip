@@ -31,5 +31,10 @@ class PurchaseProvider with ChangeNotifier {
     await _storageService.deletePurchase(id);
     await loadPurchases();
   }
+
+  Future<void> updatePurchase(GoldPurchase purchase) async {
+    await _storageService.updatePurchase(purchase);
+    await loadPurchases();
+  }
 }
 

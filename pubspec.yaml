@@ -53,6 +53,9 @@ dependencies:
   # Localization
   flutter_localizations:
     sdk: flutter
+  
+  # Calendar
+  table_calendar: ^3.1.2
 
 dev_dependencies:
   flutter_test:

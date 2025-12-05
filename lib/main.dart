@@ -5,7 +5,7 @@ import 'providers/gold_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/purchase_provider.dart';
 import 'providers/asset_provider.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -68,7 +68,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         }
 
         // Her zaman ana ekrana yönlendir (demo kullanıcı otomatik oluşturulur)
-        return const HomeScreen();
+        return const MainScreen();
       },
     );
   }

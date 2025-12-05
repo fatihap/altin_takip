@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/purchase_provider.dart';
 import '../widgets/loading_widget.dart';
+import 'edit_purchase_screen.dart';
 
 class PurchaseListScreen extends StatefulWidget {
   const PurchaseListScreen({super.key});
@@ -200,20 +201,51 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                       ],
                     ),
                   ),
-                  trailing: IconButton(
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(10),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.edit_rounded,
+                            color: Colors.blue,
+                            size: 20,
+                          ),
+                        ),
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditPurchaseScreen(purchase: purchase),
+                            ),
+                          );
+                          if (mounted) {
+                            context.read<PurchaseProvider>().loadPurchases();
+                          }
+                        },
                       ),
-                      child: const Icon(
-                        Icons.delete_rounded,
-                        color: Colors.red,
-                        size: 20,
+                      const SizedBox(width: 4),
+                      IconButton(
+                        icon: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.red,
+                            size: 20,
+                          ),
+                        ),
+                        onPressed: () => _deletePurchase(purchase.id, purchase.goldType),
                       ),
-                    ),
-                    onPressed: () => _deletePurchase(purchase.id, purchase.goldType),
+                    ],
                   ),
                 ),
               );
