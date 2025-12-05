@@ -10,10 +10,7 @@ import '../utils/price_parser.dart';
 class EditPurchaseScreen extends StatefulWidget {
   final GoldPurchase purchase;
 
-  const EditPurchaseScreen({
-    super.key,
-    required this.purchase,
-  });
+  const EditPurchaseScreen({super.key, required this.purchase});
 
   @override
   State<EditPurchaseScreen> createState() => _EditPurchaseScreenState();
@@ -25,7 +22,7 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
   late final TextEditingController _purchasePriceController;
   late final TextEditingController _locationController;
   late final TextEditingController _notesController;
-  
+
   late String _selectedGoldType;
   late DateTime _selectedDate;
 
@@ -46,16 +43,22 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
     _formKey = GlobalKey<FormState>();
     _selectedGoldType = widget.purchase.goldType;
     _selectedDate = widget.purchase.purchaseDate;
-    
+
     _amountController = TextEditingController(
-      text: widget.purchase.amount.toStringAsFixed(widget.purchase.unit == 'adet' ? 0 : 2),
+      text: widget.purchase.amount.toStringAsFixed(
+        widget.purchase.unit == 'adet' ? 0 : 2,
+      ),
     );
     _purchasePriceController = TextEditingController(
       text: widget.purchase.purchasePricePerGram != null
-          ? PriceParser.formatTurkishPrice(widget.purchase.purchasePricePerGram!)
+          ? PriceParser.formatTurkishPrice(
+              widget.purchase.purchasePricePerGram!,
+            )
           : '',
     );
-    _locationController = TextEditingController(text: widget.purchase.location ?? '');
+    _locationController = TextEditingController(
+      text: widget.purchase.location ?? '',
+    );
     _notesController = TextEditingController(text: widget.purchase.notes ?? '');
   }
 
@@ -107,7 +110,7 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
     if (goldProvider.goldPrices.isEmpty) return null;
 
     GoldPrice? matchingPrice;
-    
+
     final typeMap = {
       'Gram Altın': ['gram-altin', 'Gram Altın'],
       'Gram Has Altın': ['gram-has-altin', 'Gram Has Altın'],
@@ -123,9 +126,10 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
 
     try {
       matchingPrice = goldProvider.goldPrices.firstWhere(
-        (price) => searchTerms.any((term) => 
-          price.name.toLowerCase().contains(term.toLowerCase()) ||
-          term.toLowerCase().contains(price.name.toLowerCase())
+        (price) => searchTerms.any(
+          (term) =>
+              price.name.toLowerCase().contains(term.toLowerCase()) ||
+              term.toLowerCase().contains(price.name.toLowerCase()),
         ),
       );
     } catch (e) {
@@ -185,7 +189,9 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
 
     double? purchasePrice;
     if (_purchasePriceController.text.isNotEmpty) {
-      purchasePrice = PriceParser.parseTurkishPrice(_purchasePriceController.text);
+      purchasePrice = PriceParser.parseTurkishPrice(
+        _purchasePriceController.text,
+      );
       if (purchasePrice == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -209,10 +215,12 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
       goldType: _selectedGoldType,
       amount: double.parse(_amountController.text.replaceAll(',', '.')),
       purchaseDate: _selectedDate,
-      location: _locationController.text.trim().isEmpty 
-          ? null 
+      location: _locationController.text.trim().isEmpty
+          ? null
           : _locationController.text.trim(),
-      notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+      notes: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
       purchasePricePerGram: pricePerGram,
     );
 
@@ -233,9 +241,7 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alış Kaydını Düzenle'),
-      ),
+      appBar: AppBar(title: const Text('Alış Kaydını Düzenle')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -253,10 +259,7 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
                   ),
                 ),
                 items: _goldTypes.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type),
-                  );
+                  return DropdownMenuItem(value: type, child: Text(type));
                 }).toList(),
                 onChanged: (value) {
                   if (value != null) {
@@ -279,7 +282,9 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Lütfen miktarı girin';
@@ -328,13 +333,18 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
                           final suggestedPrice = _getCurrentPriceFromAPI();
                           if (suggestedPrice != null) {
                             setState(() {
-                              _purchasePriceController.text = PriceParser.formatTurkishPrice(suggestedPrice);
+                              _purchasePriceController.text =
+                                  PriceParser.formatTurkishPrice(
+                                    suggestedPrice,
+                                  );
                             });
                           }
                         },
                       ),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Lütfen alış fiyatını girin';
@@ -387,4 +397,3 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
     );
   }
 }
-
