@@ -20,7 +20,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   final _purchasePriceController = TextEditingController();
   final _locationController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   String _selectedGoldType = 'Gram Altın';
   DateTime _selectedDate = DateTime.now();
 
@@ -84,7 +84,9 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
       // Eğer alan boşsa veya zorla güncelleme isteniyorsa güncelle
       if (_purchasePriceController.text.isEmpty || forceUpdate) {
         setState(() {
-          _purchasePriceController.text = PriceParser.formatTurkishPrice(suggestedPrice);
+          _purchasePriceController.text = PriceParser.formatTurkishPrice(
+            suggestedPrice,
+          );
         });
       }
     }
@@ -111,7 +113,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     if (goldProvider.goldPrices.isEmpty) return null;
 
     GoldPrice? matchingPrice;
-    
+
     final typeMap = {
       'Gram Altın': ['gram-altin', 'Gram Altın'],
       'Gram Has Altın': ['gram-has-altin', 'Gram Has Altın'],
@@ -127,9 +129,10 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
 
     try {
       matchingPrice = goldProvider.goldPrices.firstWhere(
-        (price) => searchTerms.any((term) => 
-          price.name.toLowerCase().contains(term.toLowerCase()) ||
-          term.toLowerCase().contains(price.name.toLowerCase())
+        (price) => searchTerms.any(
+          (term) =>
+              price.name.toLowerCase().contains(term.toLowerCase()) ||
+              term.toLowerCase().contains(price.name.toLowerCase()),
         ),
       );
     } catch (e) {
@@ -138,7 +141,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     }
 
     if (matchingPrice == null) return null;
-    
+
     // API'den gelen satış fiyatını direkt parse et (hesaplama yapma)
     final satisPrice = PriceParser.parseTurkishPrice(matchingPrice.satis);
     return satisPrice;
@@ -195,7 +198,9 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     // Kullanıcının girdiği alış fiyatını parse et
     double? purchasePrice;
     if (_purchasePriceController.text.isNotEmpty) {
-      purchasePrice = PriceParser.parseTurkishPrice(_purchasePriceController.text);
+      purchasePrice = PriceParser.parseTurkishPrice(
+        _purchasePriceController.text,
+      );
       if (purchasePrice == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -221,10 +226,12 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
       goldType: _selectedGoldType,
       amount: double.parse(_amountController.text.replaceAll(',', '.')),
       purchaseDate: _selectedDate,
-      location: _locationController.text.trim().isEmpty 
-          ? null 
+      location: _locationController.text.trim().isEmpty
+          ? null
           : _locationController.text.trim(),
-      notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+      notes: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
       purchasePricePerGram: pricePerGram,
     );
 
@@ -235,9 +242,11 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(pricePerGram != null
-              ? 'Altın alış kaydı eklendi! (Alış fiyatı: ${PriceParser.formatTurkishPrice(pricePerGram)} ₺/gram)'
-              : 'Altın alış kaydı eklendi!'),
+          content: Text(
+            pricePerGram != null
+                ? 'Altın alış kaydı eklendi! (Alış fiyatı: ${PriceParser.formatTurkishPrice(pricePerGram)} ₺/gram)'
+                : 'Altın alış kaydı eklendi!',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -247,9 +256,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Altın Alış Ekle'),
-      ),
+      appBar: AppBar(title: const Text('Altın Alış Ekle')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -267,10 +274,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                   ),
                 ),
                 items: _goldTypes.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type),
-                  );
+                  return DropdownMenuItem(value: type, child: Text(type));
                 }).toList(),
                 onChanged: (value) {
                   if (value != null) {
@@ -297,10 +301,12 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                       helperText: unit == 'Adet'
                           ? 'Örnek: 2 (2 adet)'
                           : unit == 'Ons'
-                              ? 'Örnek: 1.5 (1.5 ons)'
-                              : 'Örnek: 5.5 (5.5 gram)',
+                          ? 'Örnek: 1.5 (1.5 ons)'
+                          : 'Örnek: 5.5 (5.5 gram)',
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Lütfen miktarı girin';
@@ -342,7 +348,8 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      helperText: 'Örnek: 5.774,89 (API\'den güncel fiyat otomatik doldurulur)',
+                      helperText:
+                          'Örnek: 5.774,89 (API\'den güncel fiyat otomatik doldurulur)',
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.refresh),
                         tooltip: 'Güncel fiyatı yükle',
@@ -350,13 +357,18 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
                           final suggestedPrice = _getCurrentPriceFromAPI();
                           if (suggestedPrice != null) {
                             setState(() {
-                              _purchasePriceController.text = PriceParser.formatTurkishPrice(suggestedPrice);
+                              _purchasePriceController.text =
+                                  PriceParser.formatTurkishPrice(
+                                    suggestedPrice,
+                                  );
                             });
                           }
                         },
                       ),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Lütfen alış fiyatını girin';
@@ -409,4 +421,3 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
     );
   }
 }
-

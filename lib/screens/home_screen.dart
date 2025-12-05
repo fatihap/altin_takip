@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _checkPasswordAndLoad() async {
     final isPasswordEnabled = await _storageService.isAssetPasswordEnabled();
-    
+
     if (isPasswordEnabled && !_isAuthenticated) {
       setState(() {
         _isCheckingAuth = false;
@@ -49,16 +49,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _showPasswordDialog() async {
     final passwordController = TextEditingController();
-    
+
     if (!mounted) return;
-    
+
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Varlık Görüntüleme',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -70,9 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           decoration: InputDecoration(
             labelText: 'Şifre',
             prefixIcon: const Icon(Icons.lock_rounded),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           onSubmitted: (value) {
             if (value.isNotEmpty) {
@@ -101,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final isCorrect = await _storageService.checkAssetPassword(
         passwordController.text,
       );
-      
+
       if (isCorrect && mounted) {
         setState(() {
           _isAuthenticated = true;
@@ -146,25 +142,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isCheckingAuth) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (!_isAuthenticated) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Varlıklarım'),
-        ),
+        appBar: AppBar(title: const Text('Varlıklarım')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.lock_rounded,
-                size: 64,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.lock_rounded, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 'Varlıkları görüntülemek için şifre gerekli',
@@ -198,110 +186,111 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Consumer3<GoldProvider, PurchaseProvider, AssetProvider>(
-        builder: (context, goldProvider, purchaseProvider, assetProvider, child) {
-          // Altın fiyatları yükleniyor mu kontrol et
-          if (goldProvider.isLoading && assetProvider.assets.isEmpty) {
-            return const LoadingWidget(message: 'Veriler yükleniyor...');
-          }
+        builder:
+            (context, goldProvider, purchaseProvider, assetProvider, child) {
+              // Altın fiyatları yükleniyor mu kontrol et
+              if (goldProvider.isLoading && assetProvider.assets.isEmpty) {
+                return const LoadingWidget(message: 'Veriler yükleniyor...');
+              }
 
-          // Altın fiyatları hatası var mı kontrol et
-          if (goldProvider.error != null && assetProvider.assets.isEmpty) {
-            return ErrorDisplayWidget(
-              message: goldProvider.error!,
-              onRetry: _refreshData,
-            );
-          }
+              // Altın fiyatları hatası var mı kontrol et
+              if (goldProvider.error != null && assetProvider.assets.isEmpty) {
+                return ErrorDisplayWidget(
+                  message: goldProvider.error!,
+                  onRetry: _refreshData,
+                );
+              }
 
-          // Varlık yoksa
-          if (assetProvider.assets.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: _refreshData,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height - 200,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(32),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD4AF37).withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.account_balance_wallet_outlined,
-                            size: 64,
-                            color: Color(0xFFD4AF37),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Henüz varlık kaydı yok',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Altın alış kaydı ekleyerek başlayın',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddPurchaseScreen(),
+              // Varlık yoksa
+              if (assetProvider.assets.isEmpty) {
+                return RefreshIndicator(
+                  onRefresh: _refreshData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - 200,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(32),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD4AF37).withOpacity(0.1),
+                                shape: BoxShape.circle,
                               ),
-                            ).then((_) => _refreshData());
-                          },
-                          icon: const Icon(Icons.add_rounded),
-                          label: const Text('İlk Alış Kaydını Ekle'),
+                              child: const Icon(
+                                Icons.account_balance_wallet_outlined,
+                                size: 64,
+                                color: Color(0xFFD4AF37),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Henüz varlık kaydı yok',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Altın alış kaydı ekleyerek başlayın',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddPurchaseScreen(),
+                                  ),
+                                ).then((_) => _refreshData());
+                              },
+                              icon: const Icon(Icons.add_rounded),
+                              label: const Text('İlk Alış Kaydını Ekle'),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            );
-          }
+                );
+              }
 
-          // Varlıklar var, göster
-          return RefreshIndicator(
-            onRefresh: _refreshData,
-            child: Column(
-              children: [
-                // Toplam varlık özeti
-                TotalAssetSummary(
-                  totalCurrentValue: assetProvider.totalCurrentValue,
-                  totalPurchaseValue: assetProvider.totalPurchaseValue,
-                  totalProfitLoss: assetProvider.totalProfitLoss,
-                  totalProfitLossPercentage: assetProvider.totalProfitLossPercentage,
+              // Varlıklar var, göster
+              return RefreshIndicator(
+                onRefresh: _refreshData,
+                child: Column(
+                  children: [
+                    // Toplam varlık özeti
+                    TotalAssetSummary(
+                      totalCurrentValue: assetProvider.totalCurrentValue,
+                      totalPurchaseValue: assetProvider.totalPurchaseValue,
+                      totalProfitLoss: assetProvider.totalProfitLoss,
+                      totalProfitLossPercentage:
+                          assetProvider.totalProfitLossPercentage,
+                    ),
+                    // Varlık listesi
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 80),
+                        itemCount: assetProvider.assets.length,
+                        itemBuilder: (context, index) {
+                          return AssetCard(asset: assetProvider.assets[index]);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                // Varlık listesi
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 80),
-                    itemCount: assetProvider.assets.length,
-                    itemBuilder: (context, index) {
-                      return AssetCard(
-                        asset: assetProvider.assets[index],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              );
+            },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {

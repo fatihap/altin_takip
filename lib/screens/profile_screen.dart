@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
-import '../providers/purchase_provider.dart';
-import '../providers/asset_provider.dart';
-import '../providers/gold_provider.dart';
 import 'purchase_list_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
