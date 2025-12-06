@@ -5,6 +5,7 @@ import 'providers/gold_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/purchase_provider.dart';
 import 'providers/asset_provider.dart';
+import 'providers/exchange_rate_provider.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GoldProvider()),
         ChangeNotifierProvider(create: (_) => PurchaseProvider()),
         ChangeNotifierProvider(create: (_) => AssetProvider()),
+        ChangeNotifierProvider(create: (_) => ExchangeRateProvider()),
       ],
       child: MaterialApp(
         title: 'Altın Takip',

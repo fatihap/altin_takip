@@ -9,7 +9,9 @@ import '../utils/price_parser.dart';
 import '../widgets/standard_app_bar.dart';
 
 class AddPurchaseScreen extends StatefulWidget {
-  const AddPurchaseScreen({super.key});
+  final DateTime? initialDate;
+
+  const AddPurchaseScreen({super.key, this.initialDate});
 
   @override
   State<AddPurchaseScreen> createState() => _AddPurchaseScreenState();
@@ -23,7 +25,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   final _notesController = TextEditingController();
 
   String _selectedGoldType = 'Gram Altın';
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
 
   final List<String> _goldTypes = [
     'Gram Altın',
@@ -59,6 +61,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedDate = widget.initialDate ?? DateTime.now();
     // Güncel fiyatı öneri olarak göster
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       // Altın fiyatlarını yükle

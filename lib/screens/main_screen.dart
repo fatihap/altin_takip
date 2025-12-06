@@ -133,7 +133,7 @@ class _MainScreenState extends State<MainScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const AddPurchaseScreen(),
+            builder: (context) => const AddPurchaseScreen(initialDate: null),
           ),
         );
       },

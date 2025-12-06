@@ -18,16 +18,39 @@ class StandardAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title,
         style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-          color: Color(0xFF1A1A1A),
+          fontWeight: FontWeight.w700,
+          fontSize: 22,
+          color: Colors.white,
+          letterSpacing: 0.3,
         ),
       ),
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: false,
       automaticallyImplyLeading: showBackButton,
-      iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
+        size: 24,
+      ),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFFD4AF37),
+              const Color(0xFFC9A227),
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFD4AF37).withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+      ),
       actions: actions,
     );
   }
@@ -35,4 +58,3 @@ class StandardAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-

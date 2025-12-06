@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../providers/asset_provider.dart';
 import '../providers/purchase_provider.dart';
 import '../providers/gold_provider.dart';
+import '../providers/exchange_rate_provider.dart';
 import '../services/storage_service.dart';
 import '../widgets/enhanced_asset_card.dart';
 import '../widgets/standard_app_bar.dart';
@@ -225,12 +226,17 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     final goldProvider = context.read<GoldProvider>();
     final purchaseProvider = context.read<PurchaseProvider>();
     final assetProvider = context.read<AssetProvider>();
+    final exchangeRateProvider = context.read<ExchangeRateProvider>();
 
     if (goldProvider.goldPrices.isEmpty) {
       await goldProvider.fetchGoldPrices();
     }
     if (purchaseProvider.purchases.isEmpty) {
       await purchaseProvider.loadPurchases();
+    }
+    if (exchangeRateProvider.usdRate == 0.0 ||
+        exchangeRateProvider.eurRate == 0.0) {
+      await exchangeRateProvider.fetchExchangeRates();
     }
 
     assetProvider.calculateAssets(
@@ -473,26 +479,47 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     expandedHeight: 0,
                     floating: true,
                     pinned: false,
-                    backgroundColor: Colors.grey[50],
+                    backgroundColor: Colors.transparent,
                     elevation: 0,
+                    flexibleSpace: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            const Color(0xFFD4AF37),
+                            const Color(0xFFC9A227),
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFD4AF37).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    ),
                     title: const Text(
                       'Portföy',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Color(0xFF1A1A1A),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: 0.3,
                       ),
                     ),
-                    iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+                    iconTheme: const IconThemeData(
+                      color: Colors.white,
+                      size: 24,
+                    ),
                     actions: [
                       IconButton(
                         icon: Icon(
                           _showFilters
                               ? Icons.filter_alt
                               : Icons.filter_alt_outlined,
-                          color: _showFilters
-                              ? const Color(0xFFD4AF37)
-                              : Colors.grey[700],
+                          color: Colors.white,
                         ),
                         onPressed: () {
                           setState(() {
@@ -503,6 +530,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.refresh_rounded),
+                        color: Colors.white,
                         onPressed: _loadData,
                         tooltip: 'Yenile',
                       ),
@@ -568,7 +596,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Toplam Portföy',
@@ -596,131 +625,181 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                             ),
                             const SizedBox(height: 20),
                             // Kar/Zarar kartı
-                            Container(
-                              padding: const EdgeInsets.all(18),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: totalProfit >= 0
-                                      ? [
-                                          Colors.green[400]!,
-                                          Colors.green[500]!,
-                                        ]
-                                      : [
-                                          Colors.red[400]!,
-                                          Colors.red[500]!,
-                                        ],
-                                ),
-                                borderRadius: BorderRadius.circular(18),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: (totalProfit >= 0
-                                            ? Colors.green
-                                            : Colors.red)
-                                        .withOpacity(0.3),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 6),
+                            if (totalProfit != 0)
+                              Container(
+                                padding: const EdgeInsets.all(18),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: totalProfit > 0
+                                        ? [
+                                            Colors.green[400]!,
+                                            Colors.green[500]!,
+                                          ]
+                                        : [Colors.red[400]!, Colors.red[500]!],
                                   ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.25),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(18),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color:
+                                          (totalProfit > 0
+                                                  ? Colors.green
+                                                  : Colors.red)
+                                              .withOpacity(0.3),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(
+                                              0.25,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            totalProfit > 0
+                                                ? Icons.trending_up_rounded
+                                                : Icons.trending_down_rounded,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
                                         ),
-                                        child: Icon(
-                                          totalProfit >= 0
-                                              ? Icons.trending_up_rounded
-                                              : Icons.trending_down_rounded,
-                                          color: Colors.white,
-                                          size: 24,
+                                        const SizedBox(width: 14),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              totalProfit > 0
+                                                  ? 'Toplam Kar'
+                                                  : 'Toplam Zarar',
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              _formatCurrency(totalProfit),
+                                              style: const TextStyle(
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                letterSpacing: -0.5,
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                      ],
+                                    ),
+                                    Icon(
+                                      totalProfit > 0
+                                          ? Icons.arrow_upward_rounded
+                                          : Icons.arrow_downward_rounded,
+                                      color: Colors.white.withOpacity(0.9),
+                                      size: 28,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              Container(
+                                padding: const EdgeInsets.all(18),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[400],
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      const SizedBox(width: 14),
-                                      Column(
+                                      child: const Icon(
+                                        Icons.remove_rounded,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 14),
+                                    const Expanded(
+                                      child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            totalProfit >= 0
-                                                ? 'Toplam Kar'
-                                                : 'Toplam Zarar',
-                                            style: const TextStyle(
+                                            'Kar/Zarar Yok',
+                                            style: TextStyle(
                                               fontSize: 13,
-                                              color: Colors.white70,
+                                              color: Colors.black54,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
-                                          const SizedBox(height: 4),
+                                          SizedBox(height: 4),
                                           Text(
-                                            _formatCurrency(totalProfit),
-                                            style: const TextStyle(
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              letterSpacing: -0.5,
+                                            'Portföy değeri değişmedi',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black87,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                  Icon(
-                                    totalProfit >= 0
-                                        ? Icons.arrow_upward_rounded
-                                        : Icons.arrow_downward_rounded,
-                                    color: Colors.white.withOpacity(0.9),
-                                    size: 28,
-                                  ),
-                                ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
                             const SizedBox(height: 20),
-                            // İstatistikler
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildSummaryItem(
-                                    'Varlık',
-                                    '${filteredAssets.length}',
-                                    Icons.inventory_2_rounded,
-                                    Colors.blue,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildSummaryItem(
-                                    'Kar',
-                                    filteredAssets
-                                        .where((a) => a.isProfit)
-                                        .length
-                                        .toString(),
-                                    Icons.trending_up_rounded,
-                                    Colors.green,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildSummaryItem(
-                                    'Zarar',
-                                    filteredAssets
-                                        .where((a) => !a.isProfit)
-                                        .length
-                                        .toString(),
-                                    Icons.trending_down_rounded,
-                                    Colors.red,
-                                  ),
-                                ),
-                              ],
+                            // Döviz Kurları
+                            Consumer<ExchangeRateProvider>(
+                              builder: (context, exchangeProvider, child) {
+                                final usdRate = exchangeProvider.usdRate;
+                                final eurRate = exchangeProvider.eurRate;
+
+                                if (usdRate == 0.0 && eurRate == 0.0) {
+                                  return const SizedBox.shrink();
+                                }
+
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildExchangeRateCard(
+                                        'USD',
+                                        usdRate,
+                                        totalValue,
+                                        Icons.attach_money_rounded,
+                                        Colors.green,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: _buildExchangeRateCard(
+                                        'EUR',
+                                        eurRate,
+                                        totalValue,
+                                        Icons.euro_rounded,
+                                        Colors.blue,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -880,9 +959,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate((context, index) {
-                         return EnhancedAssetCard(
-                           asset: filteredAssets[index],
-                         );
+                          return EnhancedAssetCard(
+                            asset: filteredAssets[index],
+                          );
                         }, childCount: filteredAssets.length),
                       ),
                     ),
@@ -895,55 +974,75 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  Widget _buildSummaryItem(
-    String label,
-    String value,
+  Widget _buildExchangeRateCard(
+    String currency,
+    double rate,
+    double totalValue,
     IconData icon,
     Color color,
   ) {
+    if (rate == 0.0) {
+      return const SizedBox.shrink();
+    }
+
+    final convertedValue = totalValue / rate;
+    final formatter = NumberFormat.currency(
+      locale: 'tr_TR',
+      symbol: currency == 'USD' ? '\$' : '€',
+      decimalDigits: 2,
+    );
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            color.withOpacity(0.15),
-            color.withOpacity(0.08),
-          ],
+          colors: [color.withOpacity(0.15), color.withOpacity(0.08)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.2), width: 1),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 20),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 18),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                currency,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           Text(
-            value,
+            formatter.format(convertedValue),
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            label,
+            'Kur: ${_formatCurrency(rate)}',
             style: TextStyle(
               fontSize: 11,
               color: Colors.grey[700],
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

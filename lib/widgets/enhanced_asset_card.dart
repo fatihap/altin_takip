@@ -353,83 +353,133 @@ class EnhancedAssetCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               // Kar/Zarar kartı
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isProfit
-                        ? [
-                            Colors.green[400]!,
-                            Colors.green[500]!,
-                          ]
-                        : [
-                            Colors.red[400]!,
-                            Colors.red[500]!,
-                          ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: (isProfit ? Colors.green : Colors.red)
-                          .withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+              if (profitLoss != null && profitLoss != 0)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isProfit
+                          ? [
+                              Colors.green[400]!,
+                              Colors.green[500]!,
+                            ]
+                          : [
+                              Colors.red[400]!,
+                              Colors.red[500]!,
+                            ],
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isProfit ? Colors.green : Colors.red)
+                            .withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              isProfit
+                                  ? Icons.arrow_upward_rounded
+                                  : Icons.arrow_downward_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
-                          child: Icon(
-                            isProfit
-                                ? Icons.arrow_upward_rounded
-                                : Icons.arrow_downward_rounded,
-                            color: Colors.white,
-                            size: 20,
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isProfit ? 'Toplam Kar' : 'Toplam Zarar',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white70,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatCurrency(profitLoss),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
+                        ],
+                      ),
+                      Icon(
+                        Icons.more_vert_rounded,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[400],
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        const SizedBox(width: 12),
-                        Column(
+                        child: const Icon(
+                          Icons.remove_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isProfit ? 'Toplam Kar' : 'Toplam Zarar',
-                              style: const TextStyle(
+                              'Kar/Zarar Yok',
+                              style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.white70,
+                                color: Colors.black54,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
-                              _formatCurrency(profitLoss),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              'Değer değişmedi',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    Icon(
-                      Icons.more_vert_rounded,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: 12),
               // Tarih ve yer bilgisi
               Row(

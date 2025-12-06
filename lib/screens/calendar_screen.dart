@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/purchase_provider.dart';
 import '../models/gold_purchase.dart';
 import '../widgets/standard_app_bar.dart';
+import 'add_purchase_screen.dart';
 
 // isSameDay fonksiyonu için
 bool isSameDay(DateTime? a, DateTime? b) {
@@ -85,6 +86,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   setState(() {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
+                  });
+                  
+                  // Seçilen güne tıklanınca AddPurchaseScreen'e yönlendir
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddPurchaseScreen(
+                        initialDate: selectedDay,
+                      ),
+                    ),
+                  ).then((_) {
+                    // Geri dönünce alışları yeniden yükle
+                    context.read<PurchaseProvider>().loadPurchases();
                   });
                 },
                 onPageChanged: (focusedDay) {
