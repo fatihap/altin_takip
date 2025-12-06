@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/storage_service.dart';
+import '../providers/purchase_provider.dart';
+import '../providers/asset_provider.dart';
+import '../providers/gold_provider.dart';
 import 'purchase_list_screen.dart';
+import 'calendar_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -695,6 +700,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                     color: Colors.blue,
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionButton(
+                    icon: Icons.calendar_today_rounded,
+                    title: 'Alış Takvimi',
+                    subtitle: 'Altın alışlarınızı takvimde görüntüleyin',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CalendarScreen(),
+                        ),
+                      );
+                    },
+                    color: const Color(0xFFD4AF37),
                   ),
                 ],
               ),
