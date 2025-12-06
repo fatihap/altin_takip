@@ -10,7 +10,7 @@ class ExchangeRateService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        
+
         double? usdRate;
         double? eurRate;
 
@@ -20,34 +20,38 @@ class ExchangeRateService {
           final satis = usdData['Satış'] ?? '';
           usdRate = _parsePrice(satis);
         }
-        
+
         if (data.containsKey('EUR') && data['EUR'] is Map<String, dynamic>) {
           final eurData = data['EUR'] as Map<String, dynamic>;
           final satis = eurData['Satış'] ?? '';
           eurRate = _parsePrice(satis);
         }
 
-        return {
-          'USD': usdRate ?? 0.0,
-          'EUR': eurRate ?? 0.0,
-        };
+        return {'USD': usdRate ?? 0.0, 'EUR': eurRate ?? 0.0};
       } else {
         throw Exception('API\'den veri alınamadı: ${response.statusCode}');
       }
     } catch (e) {
       // Hata durumunda varsayılan değerler döndür
-      return {
-        'USD': 0.0,
-        'EUR': 0.0,
-      };
+      return {'USD': 0.0, 'EUR': 0.0};
     }
   }
 
   double? _parsePrice(dynamic price) {
     if (price == null) return null;
-    
-    final priceStr = price.toString().replaceAll('.', '').replaceAll(',', '.');
+
+    // Türk formatı: "42,5354" -> 42.5354
+    String priceStr = price.toString().trim();
+
+    // Nokta ve virgülü kontrol et
+    if (priceStr.contains(',') && priceStr.contains('.')) {
+      // Hem nokta hem virgül varsa, noktaları kaldır (binlik ayırıcı), virgülü noktaya çevir
+      priceStr = priceStr.replaceAll('.', '').replaceAll(',', '.');
+    } else if (priceStr.contains(',')) {
+      // Sadece virgül varsa, virgülü noktaya çevir
+      priceStr = priceStr.replaceAll(',', '.');
+    }
+
     return double.tryParse(priceStr);
   }
 }
-
