@@ -435,54 +435,57 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                   child: selectedDayPurchases.isEmpty
                       ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFFD4AF37,
-                                  ).withOpacity(0.1),
-                                  shape: BoxShape.circle,
+                          child: Container(
+                            margin: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.08),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 4),
+                                  spreadRadius: 0,
                                 ),
-                                child: const Icon(
-                                  Icons.calendar_today_outlined,
-                                  size: 64,
-                                  color: Color(0xFFD4AF37),
+                              ],
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  DateFormat(
+                                    'd MMMM yyyy',
+                                    'tr_TR',
+                                  ).format(_selectedDay),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1A1A1A),
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              const SizedBox(height: 24),
-                              Text(
-                                DateFormat(
-                                  'd MMMM yyyy',
-                                  'tr_TR',
-                                ).format(_selectedDay),
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1A1A1A),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Bu günde altın alışı bulunmuyor',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                'Bu günde altın alışı bulunmuyor',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[600],
-                                  fontWeight: FontWeight.w500,
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Yeni alış eklemek için tarihe tıklayın',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[500],
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Yeni alış eklemek için tarihe tıklayın',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.grey[500],
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         )
                       : Column(
