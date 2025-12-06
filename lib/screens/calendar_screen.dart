@@ -48,7 +48,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   // Seçilen günün alışlarını al
   List<GoldPurchase> _getPurchasesForDay(
-      DateTime day, List<GoldPurchase> purchases) {
+    DateTime day,
+    List<GoldPurchase> purchases,
+  ) {
     return purchases.where((purchase) {
       final purchaseDate = purchase.purchaseDate;
       return purchaseDate.year == day.year &&
@@ -70,7 +72,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       'Eylül',
       'Ekim',
       'Kasım',
-      'Aralık'
+      'Aralık',
     ];
     return months[date.month - 1];
   }
@@ -89,8 +91,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         builder: (context, purchaseProvider, child) {
           final purchases = purchaseProvider.purchases;
           final purchaseDates = _getPurchaseDates(purchases);
-          final selectedDayPurchases =
-              _getPurchasesForDay(_selectedDay, purchases);
+          final selectedDayPurchases = _getPurchasesForDay(
+            _selectedDay,
+            purchases,
+          );
 
           return Column(
             children: [
@@ -133,9 +137,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AddPurchaseScreen(
-                          initialDate: selectedDay,
-                        ),
+                        builder: (context) =>
+                            AddPurchaseScreen(initialDate: selectedDay),
                       ),
                     ).then((_) {
                       // Geri dönünce alışları yeniden yükle
@@ -151,26 +154,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     return _getPurchasesForDay(day, purchases);
                   },
                   calendarStyle: CalendarStyle(
+                    cellPadding: const EdgeInsets.all(4),
+                    cellMargin: const EdgeInsets.all(2),
                     todayDecoration: BoxDecoration(
                       color: const Color(0xFFD4AF37).withOpacity(0.3),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: const Color(0xFFD4AF37),
-                        width: 2,
+                        width: 1.5,
                       ),
                     ),
                     selectedDecoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFD4AF37),
-                          Color(0xFFC9A227),
-                        ],
+                        colors: [Color(0xFFD4AF37), Color(0xFFC9A227)],
                       ),
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFFD4AF37).withOpacity(0.4),
-                          blurRadius: 8,
+                          blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
                       ],
@@ -179,53 +181,101 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       color: Colors.green,
                       shape: BoxShape.circle,
                     ),
+                    markerSize: 6,
                     outsideDaysVisible: false,
                     weekendTextStyle: TextStyle(
                       color: Colors.grey[600],
                       fontWeight: FontWeight.w500,
+                      fontSize: 12,
                     ),
                     defaultTextStyle: const TextStyle(
                       color: Color(0xFF1A1A1A),
                       fontWeight: FontWeight.w500,
+                      fontSize: 12,
                     ),
                     selectedTextStyle: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                     todayTextStyle: const TextStyle(
                       color: Color(0xFF1A1A1A),
                       fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                     holidayTextStyle: TextStyle(
                       color: Colors.red[400],
                       fontWeight: FontWeight.w500,
+                      fontSize: 12,
                     ),
                   ),
                   // Altın alınan günleri özel stil ile göster
                   calendarBuilders: CalendarBuilders(
                     defaultBuilder: (context, date, _) {
-                      final dateOnly =
-                          DateTime(date.year, date.month, date.day);
+                      final dateOnly = DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                      );
                       final hasPurchase = purchaseDates.contains(dateOnly);
 
                       if (hasPurchase) {
                         return Container(
-                          margin: const EdgeInsets.all(4),
+                          margin: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.green[400]!,
-                                Colors.green[500]!,
-                              ],
+                              colors: [Colors.green[400]!, Colors.green[500]!],
                             ),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.green[700]!,
-                              width: 2,
+                              width: 1.5,
                             ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.green.withOpacity(0.3),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${date.day}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return null;
+                    },
+                    todayBuilder: (context, date, _) {
+                      final dateOnly = DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                      );
+                      final hasPurchase = purchaseDates.contains(dateOnly);
+
+                      if (hasPurchase) {
+                        return Container(
+                          margin: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.green[500]!, Colors.green[600]!],
+                            ),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFD4AF37),
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.4),
                                 blurRadius: 6,
                                 offset: const Offset(0, 2),
                               ),
@@ -237,49 +287,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                      return null;
-                    },
-                    todayBuilder: (context, date, _) {
-                      final dateOnly =
-                          DateTime(date.year, date.month, date.day);
-                      final hasPurchase = purchaseDates.contains(dateOnly);
-
-                      if (hasPurchase) {
-                        return Container(
-                          margin: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.green[500]!,
-                                Colors.green[600]!,
-                              ],
-                            ),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFFD4AF37),
-                              width: 3,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.withOpacity(0.4),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${date.day}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -288,30 +296,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       return null;
                     },
                     selectedBuilder: (context, date, _) {
-                      final dateOnly =
-                          DateTime(date.year, date.month, date.day);
+                      final dateOnly = DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                      );
                       final hasPurchase = purchaseDates.contains(dateOnly);
 
                       if (hasPurchase) {
                         return Container(
-                          margin: const EdgeInsets.all(4),
+                          margin: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFFD4AF37),
-                                Color(0xFFC9A227),
-                              ],
+                              colors: [Color(0xFFD4AF37), Color(0xFFC9A227)],
                             ),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.green[700]!,
-                              width: 3,
+                              width: 2,
                             ),
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xFFD4AF37).withOpacity(0.5),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
                               ),
                             ],
                           ),
@@ -321,7 +329,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                fontSize: 12,
                               ),
                             ),
                           ),
@@ -335,41 +343,38 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     titleCentered: true,
                     formatButtonShowsNext: false,
                     leftChevronIcon: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: const Color(0xFFD4AF37).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.chevron_left_rounded,
                         color: Color(0xFFD4AF37),
-                        size: 20,
+                        size: 18,
                       ),
                     ),
                     rightChevronIcon: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: const Color(0xFFD4AF37).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.chevron_right_rounded,
                         color: Color(0xFFD4AF37),
-                        size: 20,
+                        size: 18,
                       ),
                     ),
                     formatButtonDecoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFD4AF37),
-                          Color(0xFFC9A227),
-                        ],
+                        colors: [Color(0xFFD4AF37), Color(0xFFC9A227)],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
                           color: const Color(0xFFD4AF37).withOpacity(0.3),
-                          blurRadius: 8,
+                          blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
                       ],
@@ -377,26 +382,33 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     formatButtonTextStyle: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 11,
+                    ),
+                    formatButtonPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
                     titleTextStyle: const TextStyle(
                       color: Color(0xFF1A1A1A),
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
+                    leftChevronPadding: const EdgeInsets.only(left: 4),
+                    rightChevronPadding: const EdgeInsets.only(right: 4),
                   ),
                   daysOfWeekStyle: DaysOfWeekStyle(
                     weekdayStyle: TextStyle(
                       color: Colors.grey[700],
                       fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontSize: 11,
                     ),
                     weekendStyle: TextStyle(
                       color: Colors.grey[700],
                       fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontSize: 11,
                     ),
                   ),
+                  rowHeight: 40,
                   locale: 'tr_TR',
                   availableCalendarFormats: const {
                     CalendarFormat.month: 'Ay',
@@ -429,7 +441,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFD4AF37).withOpacity(0.1),
+                                  color: const Color(
+                                    0xFFD4AF37,
+                                  ).withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -440,8 +454,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               ),
                               const SizedBox(height: 24),
                               Text(
-                                DateFormat('d MMMM yyyy', 'tr_TR')
-                                    .format(_selectedDay),
+                                DateFormat(
+                                  'd MMMM yyyy',
+                                  'tr_TR',
+                                ).format(_selectedDay),
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -506,8 +522,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          DateFormat('d MMMM yyyy', 'tr_TR')
-                                              .format(_selectedDay),
+                                          DateFormat(
+                                            'd MMMM yyyy',
+                                            'tr_TR',
+                                          ).format(_selectedDay),
                                           style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -521,9 +539,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: Colors.green.withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                            color: Colors.green.withOpacity(
+                                              0.2,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                           child: Text(
                                             '${selectedDayPurchases.length} ${selectedDayPurchases.length == 1 ? 'alış' : 'alış'}',
@@ -568,8 +589,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                                 Colors.green[500]!,
                                               ],
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           child: const Icon(
                                             Icons.monetization_on_rounded,
@@ -605,18 +627,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                                     style: TextStyle(
                                                       fontSize: 13,
                                                       color: Colors.grey[700],
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                              if (purchase.purchasePricePerGram !=
+                                              if (purchase
+                                                      .purchasePricePerGram !=
                                                   null) ...[
                                                 const SizedBox(height: 4),
                                                 Row(
                                                   children: [
                                                     Icon(
-                                                      Icons.attach_money_rounded,
+                                                      Icons
+                                                          .attach_money_rounded,
                                                       size: 14,
                                                       color: Colors.grey[600],
                                                     ),
@@ -634,33 +659,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                                 ),
                                               ],
                                               if (purchase.location != null &&
-                                                  purchase.location!.isNotEmpty)
-                                                ...[
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.location_on_rounded,
-                                                        size: 14,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Expanded(
-                                                        child: Text(
-                                                          purchase.location!,
-                                                          style: TextStyle(
-                                                            fontSize: 13,
-                                                            color: Colors.grey[700],
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
+                                                  purchase
+                                                      .location!
+                                                      .isNotEmpty) ...[
+                                                const SizedBox(height: 4),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on_rounded,
+                                                      size: 14,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Expanded(
+                                                      child: Text(
+                                                        purchase.location!,
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          color:
+                                                              Colors.grey[700],
+                                                          fontWeight:
+                                                              FontWeight.w500,
                                                         ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
-                                                    ],
-                                                  ),
-                                                ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ],
                                           ),
                                         ),

@@ -8,10 +8,7 @@ import 'package:provider/provider.dart';
 class EnhancedAssetCard extends StatelessWidget {
   final GoldAsset asset;
 
-  const EnhancedAssetCard({
-    super.key,
-    required this.asset,
-  });
+  const EnhancedAssetCard({super.key, required this.asset});
 
   String _formatCurrency(double? value) {
     if (value == null) return 'Hesaplanamadı';
@@ -64,9 +61,8 @@ class EnhancedAssetCard extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditPurchaseScreen(
-                      purchase: asset.purchase,
-                    ),
+                    builder: (context) =>
+                        EditPurchaseScreen(purchase: asset.purchase),
                   ),
                 ).then((_) {
                   context.read<PurchaseProvider>().loadPurchases();
@@ -116,9 +112,9 @@ class EnhancedAssetCard extends StatelessWidget {
                 );
 
                 if (confirmed == true && context.mounted) {
-                  await context
-                      .read<PurchaseProvider>()
-                      .deletePurchase(asset.purchase.id);
+                  await context.read<PurchaseProvider>().deletePurchase(
+                    asset.purchase.id,
+                  );
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -219,9 +215,7 @@ class EnhancedAssetCard extends StatelessWidget {
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: isProfit
-                          ? Colors.green[50]
-                          : Colors.red[50],
+                      color: isProfit ? Colors.green[50] : Colors.red[50],
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -232,9 +226,7 @@ class EnhancedAssetCard extends StatelessWidget {
                               ? Icons.trending_up_rounded
                               : Icons.trending_down_rounded,
                           size: 16,
-                          color: isProfit
-                              ? Colors.green[700]
-                              : Colors.red[700],
+                          color: isProfit ? Colors.green[700] : Colors.red[700],
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -261,10 +253,7 @@ class EnhancedAssetCard extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            Colors.blue[50]!,
-                            Colors.blue[100]!,
-                          ],
+                          colors: [Colors.blue[50]!, Colors.blue[100]!],
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -308,10 +297,7 @@ class EnhancedAssetCard extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            Colors.green[50]!,
-                            Colors.green[100]!,
-                          ],
+                          colors: [Colors.green[50]!, Colors.green[100]!],
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -361,14 +347,8 @@ class EnhancedAssetCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: isProfit
-                          ? [
-                              Colors.green[400]!,
-                              Colors.green[500]!,
-                            ]
-                          : [
-                              Colors.red[400]!,
-                              Colors.red[500]!,
-                            ],
+                          ? [Colors.green[400]!, Colors.green[500]!]
+                          : [Colors.red[400]!, Colors.red[500]!],
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
@@ -503,8 +483,10 @@ class EnhancedAssetCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          DateFormat('dd MMM yyyy', 'tr_TR')
-                              .format(asset.purchase.purchaseDate),
+                          DateFormat(
+                            'dd MMM yyyy',
+                            'tr_TR',
+                          ).format(asset.purchase.purchaseDate),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[700],
@@ -558,4 +540,3 @@ class EnhancedAssetCard extends StatelessWidget {
     );
   }
 }
-

@@ -25,8 +25,9 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: StandardAppBar(
-        title: 'Güncel Altın Fiyatları',
+        title: 'Piyasalar',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
@@ -57,12 +58,19 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.trending_up_rounded,
-                    size: 64,
-                    color: Colors.grey[400],
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFD4AF37).withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.trending_up_rounded,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   Text(
                     'Altın fiyatı bulunamadı',
                     style: TextStyle(
@@ -76,6 +84,17 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
                     onPressed: () => provider.fetchGoldPrices(),
                     icon: const Icon(Icons.refresh_rounded),
                     label: const Text('Yeniden Dene'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFD4AF37),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -86,88 +105,120 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
             onRefresh: () => provider.fetchGoldPrices(),
             child: CustomScrollView(
               slivers: [
-                // Başlık ve güncelleme bilgisi
+                // Başlık kartı
                 SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0xFFD4AF37).withOpacity(0.2),
-                              const Color(0xFFD4AF37).withOpacity(0.1),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFD4AF37).withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                  child: Container(
+                    margin: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFFD4AF37).withOpacity(0.2),
+                          const Color(0xFFD4AF37).withOpacity(0.1),
+                          Colors.white,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFD4AF37).withOpacity(0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                          spreadRadius: 0,
                         ),
-                        child: Column(
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.5),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.trending_up_rounded,
-                                    color: Color(0xFFD4AF37),
-                                    size: 24,
-                                  ),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white.withOpacity(0.9),
+                                    Colors.white.withOpacity(0.7),
+                                  ],
                                 ),
-                                const SizedBox(width: 12),
-                                const Text(
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.trending_up_rounded,
+                                color: Color(0xFFD4AF37),
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
                                   'Canlı Fiyatlar',
                                   style: TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF1A1A1A),
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Güncel altın fiyatları',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ],
                             ),
-                            if (provider.updateDate != null) ...[
-                              const SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.update_rounded,
-                                    size: 16,
-                                    color: Colors.grey[700],
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Son Güncelleme: ${provider.updateDate}',
-                                    style: TextStyle(
-                                      color: Colors.grey[700],
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
+                        if (provider.updateDate != null) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.update_rounded,
+                                  size: 16,
+                                  color: Colors.grey[700],
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Son Güncelleme: ${provider.updateDate}',
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
                 // Fiyat listesi
@@ -198,4 +249,3 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
     );
   }
 }
-
