@@ -369,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   title: const Text(
-                    'Ana Sayfa',
+                    'Portföyüm',
                     style: TextStyle(
                       color: Color(0xFF1A1A1A),
                       fontWeight: FontWeight.bold,

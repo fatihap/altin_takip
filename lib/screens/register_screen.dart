@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/loading_widget.dart';
-import 'home_screen.dart';
+import 'main_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -44,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (mounted) {
       if (success) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

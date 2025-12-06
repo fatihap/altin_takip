@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
 import 'portfolio_screen.dart';
 import 'markets_screen.dart';
+import 'reports_screen.dart';
 import 'profile_screen.dart';
 import 'add_purchase_screen.dart';
 
@@ -16,9 +16,9 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const HomeScreen(),
     const PortfolioScreen(),
     const MarketsScreen(),
+    const ReportsScreen(),
     const ProfileScreen(),
   ];
 
@@ -48,19 +48,19 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(
-                  icon: Icons.home_rounded,
-                  label: 'Anasayfa',
+                  icon: Icons.account_balance_wallet_rounded,
+                  label: 'Portföy',
                   index: 0,
                 ),
                 _buildNavItem(
-                  icon: Icons.account_balance_wallet_rounded,
-                  label: 'Portföy',
+                  icon: Icons.bar_chart_rounded,
+                  label: 'Piyasalar',
                   index: 1,
                 ),
                 _buildFloatingButton(),
                 _buildNavItem(
-                  icon: Icons.bar_chart_rounded,
-                  label: 'Piyasalar',
+                  icon: Icons.assessment_rounded,
+                  label: 'Raporlar',
                   index: 2,
                 ),
                 _buildNavItem(
