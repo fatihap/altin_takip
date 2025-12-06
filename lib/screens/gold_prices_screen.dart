@@ -4,6 +4,7 @@ import '../providers/gold_provider.dart';
 import '../widgets/gold_price_card.dart';
 import '../widgets/loading_widget.dart';
 import '../widgets/error_widget.dart';
+import '../widgets/standard_app_bar.dart';
 
 class GoldPricesScreen extends StatefulWidget {
   const GoldPricesScreen({super.key});
@@ -24,12 +25,8 @@ class _GoldPricesScreenState extends State<GoldPricesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Güncel Altın Fiyatları',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 0,
+      appBar: StandardAppBar(
+        title: 'Güncel Altın Fiyatları',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),

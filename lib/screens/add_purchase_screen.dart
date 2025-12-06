@@ -6,6 +6,7 @@ import '../providers/gold_provider.dart';
 import '../models/gold_purchase.dart';
 import '../models/gold_price.dart';
 import '../utils/price_parser.dart';
+import '../widgets/standard_app_bar.dart';
 
 class AddPurchaseScreen extends StatefulWidget {
   const AddPurchaseScreen({super.key});
@@ -256,7 +257,7 @@ class _AddPurchaseScreenState extends State<AddPurchaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Altın Alış Ekle')),
+      appBar: const StandardAppBar(title: 'Altın Alış Ekle'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(

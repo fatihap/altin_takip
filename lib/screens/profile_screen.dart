@@ -6,6 +6,7 @@ import '../providers/asset_provider.dart';
 import '../providers/gold_provider.dart';
 import 'purchase_list_screen.dart';
 import 'calendar_screen.dart';
+import '../widgets/standard_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -491,13 +492,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Profil ve Ayarlar',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 0,
-      ),
+      appBar: const StandardAppBar(title: 'Profil ve Ayarlar'),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -4,6 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../providers/purchase_provider.dart';
 import '../models/gold_purchase.dart';
+import '../widgets/standard_app_bar.dart';
 
 // isSameDay fonksiyonu için
 bool isSameDay(DateTime? a, DateTime? b) {
@@ -57,9 +58,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Alış Takvimi'),
-      ),
+      appBar: const StandardAppBar(title: 'Alış Takvimi'),
       body: Consumer<PurchaseProvider>(
         builder: (context, purchaseProvider, child) {
           final purchases = purchaseProvider.purchases;

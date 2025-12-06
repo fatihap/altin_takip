@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'portfolio_screen.dart';
 import 'markets_screen.dart';
 import 'reports_screen.dart';
+import 'calendar_screen.dart';
 import 'profile_screen.dart';
 import 'add_purchase_screen.dart';
 
@@ -19,6 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     const PortfolioScreen(),
     const MarketsScreen(),
     const ReportsScreen(),
+    const CalendarScreen(),
     const ProfileScreen(),
   ];
 
@@ -64,9 +66,14 @@ class _MainScreenState extends State<MainScreen> {
                   index: 2,
                 ),
                 _buildNavItem(
+                  icon: Icons.calendar_today_rounded,
+                  label: 'Takvim',
+                  index: 3,
+                ),
+                _buildNavItem(
                   icon: Icons.person_rounded,
                   label: 'Profil',
-                  index: 3,
+                  index: 4,
                 ),
               ],
             ),

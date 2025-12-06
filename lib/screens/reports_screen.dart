@@ -6,6 +6,7 @@ import '../providers/purchase_provider.dart';
 import '../providers/gold_provider.dart';
 import '../models/gold_asset.dart';
 import '../widgets/loading_widget.dart';
+import '../widgets/standard_app_bar.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -111,14 +112,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Text(
-          'Raporlar',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        backgroundColor: Colors.grey[50],
-        elevation: 0,
-      ),
+      appBar: const StandardAppBar(title: 'Raporlar'),
       body: Consumer3<GoldProvider, PurchaseProvider, AssetProvider>(
         builder:
             (context, goldProvider, purchaseProvider, assetProvider, child) {

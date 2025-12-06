@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/purchase_provider.dart';
 import '../widgets/loading_widget.dart';
+import '../widgets/standard_app_bar.dart';
 import 'edit_purchase_screen.dart';
 
 class PurchaseListScreen extends StatefulWidget {
@@ -25,9 +26,7 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Kayıt Sil',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -67,9 +66,7 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Altın Alış Kayıtları'),
-      ),
+      appBar: const StandardAppBar(title: 'Altın Alış Kayıtları'),
       body: Consumer<PurchaseProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -157,16 +154,21 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                           Icons.scale_rounded,
                           'Miktar: ${purchase.amount.toStringAsFixed(purchase.unit == 'adet' ? 0 : 2)} ${purchase.unit}',
                         ),
-                        if (purchase.location != null && purchase.location!.isNotEmpty)
+                        if (purchase.location != null &&
+                            purchase.location!.isNotEmpty)
                           _buildInfoRow(
                             Icons.location_on_rounded,
                             purchase.location!,
                           ),
                         _buildInfoRow(
                           Icons.calendar_today_rounded,
-                          DateFormat('dd MMMM yyyy', 'tr_TR').format(purchase.purchaseDate),
+                          DateFormat(
+                            'dd MMMM yyyy',
+                            'tr_TR',
+                          ).format(purchase.purchaseDate),
                         ),
-                        if (purchase.notes != null && purchase.notes!.isNotEmpty)
+                        if (purchase.notes != null &&
+                            purchase.notes!.isNotEmpty)
                           Padding(
                             padding: const EdgeInsets.only(top: 8),
                             child: Container(
@@ -221,7 +223,8 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EditPurchaseScreen(purchase: purchase),
+                              builder: (context) =>
+                                  EditPurchaseScreen(purchase: purchase),
                             ),
                           );
                           if (mounted) {
@@ -243,7 +246,8 @@ class _PurchaseListScreenState extends State<PurchaseListScreen> {
                             size: 20,
                           ),
                         ),
-                        onPressed: () => _deletePurchase(purchase.id, purchase.goldType),
+                        onPressed: () =>
+                            _deletePurchase(purchase.id, purchase.goldType),
                       ),
                     ],
                   ),
